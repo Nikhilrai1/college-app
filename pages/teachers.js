@@ -1,33 +1,30 @@
 import React, { useState, useEffect } from 'react'
 import mongoose from "mongoose";
-import Student from '../models/Student';
+import Teacher from "../models/Teacher";
 import Link from "next/Link"
 
 
 
-const students = ({ students }) => {
-    const [allStudents, setAllStudents] = useState(students);
+const Teachers = ({ teachers }) => {
+    const [allTeachers, setAllTeachers] = useState(teachers);
     const [sortBy, setSortBy] = useState("all");
     const [subsort, setSubsort] = useState("");
 
     const sortStudent = (sortBy, subsort) => {
-        if (sortBy == "grade") {
-            setAllStudents(students.filter(student => student.grade == subsort));
-        }
-        else if (sortBy == "stream") {
-            setAllStudents(students.filter(student => student.stream == subsort));
+        if (sortBy == "subject") {
+            setAllTeachers(teachers.filter(teacher => teacher.subject == subsort));
         }
         else if (sortBy == "address") {
-            setAllStudents(students.filter(student => student.address == subsort));
+            setAllTeachers(teachers.filter(teacher => teacher.address == subsort));
         }
         else if (sortBy == "name") {
-            setAllStudents(students.filter(student => student.name == subsort));
+            setAllTeachers(teachers.filter(teacher => teacher.name == subsort));
         }
         else if (sortBy == "all") {
-            setAllStudents(students);
+            setAllStudents(teachers);
         }
         else if (sortBy == "email") {
-            setAllStudents(students.filter(student => student.email == subsort));
+            setAllTeachers(teachers.filter(teacher => teacher.email == subsort));
         }
         setSubsort("");
     }
@@ -45,20 +42,21 @@ const students = ({ students }) => {
                             <select name="sort" id="name" value={sortBy} onChange={(e) => setSortBy(e.target.value)} className='border border-black mx-1'>
                                 <option value="all">All</option>
                                 <option value="name">Name</option>
-                                <option value="grade">Grade</option>
+                                <option value="subject">Subject</option>
                                 <option value="address">Address</option>
-                                <option value="stream">Stream</option>
                                 <option value="email">Email</option>
                             </select>
-                            {sortBy == "grade" &&
-                                <select name="sort" id="name" value={subsort} onChange={(e) => setSubsort(e.target.value)} className='border border-black mx-1'>
-                                    <option value="11">11</option>
-                                    <option value="12">12</option>
-                                </select>
-                            }
-                            {sortBy == "stream" &&
+                            {sortBy == "subject" &&
                                 <select name="sort" id="name" value={subsort} onChange={(e) => setSubsort(e.target.value)} className='border border-black mx-1'>
                                     <option value="science">Science</option>
+                                    <option value="physics">Physics</option>
+                                    <option value="chemistry">Chemistry</option>
+                                    <option value="biology">Biology</option>
+                                    <option value="english">English</option>
+                                    <option value="nepali">Nepali</option>
+                                    <option value="social">Social</option>
+                                    <option value="math">Math</option>
+                                    <option value="computer">Computer</option>
                                     <option value="management">Management</option>
                                     <option value="bussiness">Bussiness</option>
                                 </select>
@@ -105,7 +103,7 @@ const students = ({ students }) => {
                     </div>
                     <div className="flex flex-wrap -m-4">
                         {
-                            allStudents.map((data) => {
+                            allTeachers.map((data) => {
                                 return (
                                     <div key={data.email} className="lg:w-1/4 md:w-1/2 p-4 w-full m-2 bg-white shadow-xl rounded-lg py-3">
                                         <div className="photo-wrapper p-2">
@@ -119,25 +117,21 @@ const students = ({ students }) => {
                                             <table className="text-xs mx-auto my-3">
                                                 <tbody>
                                                     <tr>
-                                                        <td className="px-2 py-2 text-gray-500 font-semibold">Stream</td>
-                                                        <td className="px-2 py-2">: {data.stream}</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td className="px-2 py-2 text-gray-500 font-semibold">Group</td>
-                                                        <td className="px-2 py-2">: {data.group}</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td className="px-2 py-2 text-gray-500 font-semibold">Address</td>
-                                                        <td className="px-2 py-2">: {data.address}</td>
+                                                        <td className="px-2 py-2 text-gray-500 font-semibold">Subject</td>
+                                                        <td className="px-2 py-2">: {data.subject}</td>
                                                     </tr>
                                                     <tr>
                                                         <td className="px-2 py-2 text-gray-500 font-semibold">Mobile</td>
                                                         <td className="px-2 py-2">: {data.mobile}</td>
                                                     </tr>
+                                                    <tr>
+                                                        <td className="px-2 py-2 text-gray-500 font-semibold">Address</td>
+                                                        <td className="px-2 py-2">: {data.address}</td>
+                                                    </tr>
                                                 </tbody></table>
 
                                             <div className="text-center my-3">
-                                                <Link href={`student/${data.email}`}><a className="text-xs text-indigo-500 italic hover:underline hover:text-indigo-600 font-medium" href="#">View Profile</a></Link>
+                                                <Link href={`Teacher/${data.email}`}><a className="text-xs text-indigo-500 italic hover:underline hover:text-indigo-600 font-medium" href="#">View Profile</a></Link>
                                             </div>
                                         </div>
                                     </div>
@@ -151,19 +145,14 @@ const students = ({ students }) => {
     )
 }
 
-export default students
+export default Teachers
 export async function getServerSideProps(context) {
     if (!mongoose.connections[0].readyState) {
         await mongoose.connect(process.env.MONGO_URI);
     }
-    const students = await Student.find();
-
-    const gradeSort = await Student.find({ grade: "12" });
-    // const addressSort = await Student.find({ address: address });
-    // const emailSort = await Student.findOne({ email: email })
-    // console.log(gradeSort);
+    const teachers = await Teacher.find();
 
     return {
-        props: { students: JSON.parse(JSON.stringify(students)) },
+        props: { teachers: JSON.parse(JSON.stringify(teachers)) },
     }
 }

@@ -5,14 +5,12 @@ import { storage } from '../firebase';
 import { ref, uploadBytesResumable, getDownloadURL, deleteObject, getStorage } from "firebase/storage";
 
 
-const Signup = () => {
+const Teachersignup = () => {
     // state varriable of input field
     const [name, setName] = useState("");
-    const [grade, setGrade] = useState("");
     const [email, setEmail] = useState("");
+    const [subject, setSubject] = useState("");
     const [password, setPassword] = useState("");
-    const [stream, setStream] = useState("");
-    const [group, setGroup] = useState("");
     const [address, setAddress] = useState("");
     const [mobile, setMobile] = useState("");
     const [gender, setGender] = useState("");
@@ -28,12 +26,12 @@ const Signup = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            let res = await fetch(`${process.env.NEXT_PUBLIC_HOST}/api/postuser`, {
+            let res = await fetch(`${process.env.NEXT_PUBLIC_HOST}/api/postteacher`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ name, grade, email, password, stream, group, address, mobile, gender, dob, profile }),
+                body: JSON.stringify({ name, email, password, subject, address, mobile, gender, dob, profile }),
             })
             let postData = await res.json();
             console.log(postData)
@@ -61,11 +59,9 @@ const Signup = () => {
                 deleteFile();
             }
             setName("")
-            setGrade("")
             setEmail("")
             setPassword("")
-            setStream("")
-            setGroup("")
+            setSubject("")
             setAddress("")
             setMobile("")
             setGender("")
@@ -89,25 +85,18 @@ const Signup = () => {
 
     // handle change of input field
     const handleInput = (e) => {
-        console.log(e.target.value)
         const { value } = e.target;
         if (e.target.name == "name") {
             setName(value)
         }
-        else if (e.target.name == "grade") {
-            setGrade(value);
+        else if (e.target.name == "subject") {
+            setSubject(value);
         }
         else if (e.target.name == "email") {
             setEmail(value);
         }
         else if (e.target.name == "password") {
             setPassword(value);
-        }
-        else if (e.target.name == "stream") {
-            setStream(value);
-        }
-        else if (e.target.name == "group") {
-            setGroup(value);
         }
         else if (e.target.name == "address") {
             setAddress(value);
@@ -144,7 +133,7 @@ const Signup = () => {
         if (!file) {
             alert("Please upload an image first!");
         }
-        const storageRef = ref(storage, `/StudentProfile/${file.name}`);
+        const storageRef = ref(storage, `/TeacherProfile/${file.name}`);
         const uploadTask = uploadBytesResumable(storageRef, file);
         uploadTask.on(
             "state_changed",
@@ -214,31 +203,31 @@ const Signup = () => {
                             <form onSubmit={handleSubmit} method="POST" className="px-8 pt-6 pb-8 mb-4 bg-white rounded">
                                 <div className="mb-4 md:flex md:justify-between">
                                     <div className="mb-4 md:mr-2 md:mb-0">
-                                        <label className="block mb-2 text-sm font-bold text-gray-700" htmlFor="firstName">
-                                            Student Name
+                                        <label className="block mb-2 text-sm font-bold text-gray-700" htmlFor="teachername">
+                                            Teacher Name
                                         </label>
                                         <input
                                             name="name"
                                             onChange={handleInput}
                                             value={name}
                                             className="w-full px-3 py-2 text-sm leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline"
-                                            id="studentname"
+                                            id="Teachername"
                                             type="text"
-                                            placeholder="Student Name"
+                                            placeholder="Teacher Name"
                                         />
                                     </div>
                                     <div className="md:ml-2">
-                                        <label className="block mb-2 text-sm font-bold text-gray-700" htmlFor="grade">
-                                            Grade
+                                        <label className="block mb-2 text-sm font-bold text-gray-700" htmlFor="subject">
+                                            Subject
                                         </label>
                                         <input
-                                            name="grade"
+                                            name="subject"
                                             onChange={handleInput}
-                                            value={grade}
+                                            value={subject}
                                             className="w-full px-3 py-2 text-sm leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline"
-                                            id="grade"
+                                            id="subject"
                                             type="text"
-                                            placeholder="Grade"
+                                            placeholder="Subject"
                                         />
                                     </div>
                                 </div>
@@ -269,36 +258,6 @@ const Signup = () => {
                                             id="password"
                                             type="password"
                                             placeholder="*******"
-                                        />
-                                    </div>
-                                </div>
-                                <div className="mb-4 md:flex md:justify-between">
-                                    <div className="mb-4 md:mr-2 md:mb-0">
-                                        <label className="block mb-2 text-sm font-bold text-gray-700" htmlFor="stream">
-                                            Stream
-                                        </label>
-                                        <input
-                                            name="stream"
-                                            onChange={handleInput}
-                                            value={stream}
-                                            className="w-full px-3 py-2 text-sm leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline"
-                                            id="stream"
-                                            type="text"
-                                            placeholder="Stream"
-                                        />
-                                    </div>
-                                    <div className="md:ml-2">
-                                        <label className="block mb-2 text-sm font-bold text-gray-700" htmlFor="group">
-                                            Group
-                                        </label>
-                                        <input
-                                            name="group"
-                                            onChange={handleInput}
-                                            value={group}
-                                            className="w-full px-3 py-2 text-sm leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline"
-                                            id="group"
-                                            type="text"
-                                            placeholder="group"
                                         />
                                     </div>
                                 </div>
@@ -399,4 +358,4 @@ const Signup = () => {
         </>
     )
 }
-export default Signup
+export default Teachersignup
