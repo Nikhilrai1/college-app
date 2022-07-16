@@ -3,7 +3,7 @@ import { useRouter } from "next/router"
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-const Login = ({createToken}) => {
+const Teacherlogin = ({createToken}) => {
     // state varriable of input field
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -13,7 +13,7 @@ const Login = ({createToken}) => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            let res = await fetch(`${process.env.NEXT_PUBLIC_HOST}/api/login`, {
+            let res = await fetch(`${process.env.NEXT_PUBLIC_HOST}/api/teacherlogin`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -21,6 +21,7 @@ const Login = ({createToken}) => {
                 body: JSON.stringify({ email, password }),
             })
             let postData = await res.json();
+            console.log(postData)
             if (postData.success) {
                 toast.success('Login Successfully', {
                     position: "top-right",
@@ -151,4 +152,4 @@ const Login = ({createToken}) => {
         </>
     )
 }
-export default Login
+export default Teacherlogin

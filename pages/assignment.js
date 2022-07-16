@@ -2,13 +2,14 @@ import React, { useState, useRef } from 'react';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { storage } from '../firebase';
-import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
+import { ref, uploadBytesResumable, getDownloadURL, deleteObject, getStorage } from "firebase/storage";
 
 
 const Assignment = () => {
   // state varriable of input field
   const [title, setTitle] = useState("");
   const [grade, setGrade] = useState("");
+  const [subject, setSubject] = useState("");
   const [stream, setStream] = useState("");
   const [group, setGroup] = useState("");
   const [desc, setDesc] = useState("");
@@ -21,13 +22,15 @@ const Assignment = () => {
   // handle submit on clicking register button
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const token = JSON.parse(localStorage.getItem("token"));
     try {
       let res = await fetch(`${process.env.NEXT_PUBLIC_HOST}/api/assignment`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          "Authorization": `Bearer ${token}`
         },
-        body: JSON.stringify({ title, grade, desc, stream, group, deadline, file }),
+        body: JSON.stringify({ title, grade, desc, stream, group, deadline, fileUrl, subject }),
       })
       let postData = await res.json();
       console.log(postData)
@@ -43,7 +46,10 @@ const Assignment = () => {
         });
       }
       else {
-        toast.error('Invalid Credential', {
+        if (fileUrl != "") {
+          deleteFile();
+        }
+        toast.error(postData.error, {
           position: "top-right",
           autoClose: 5000,
           hideProgressBar: false,
@@ -60,9 +66,13 @@ const Assignment = () => {
       setStream("")
       setGroup("")
       setFile("")
+      setSubject("")
     }
     catch (err) {
       console.log(err);
+      if (fileUrl != "") {
+        deleteFile();
+      }
       toast.error('Internal server error', {
         position: "top-right",
         autoClose: 5000,
@@ -77,13 +87,15 @@ const Assignment = () => {
 
   // handle change of input field
   const handleInput = (e) => {
-    console.log(e.target.value)
     const { value } = e.target;
     if (e.target.name == "title") {
       setTitle(value)
     }
     else if (e.target.name == "grade") {
       setGrade(value);
+    }
+    else if (e.target.name == "subject") {
+      setSubject(value);
     }
     else if (e.target.name == "desc") {
       setDesc(value);
@@ -98,6 +110,18 @@ const Assignment = () => {
       setDeadline(value);
     }
   }
+  function deleteFile() {
+    const desertRef = ref(getStorage(), fileUrl);
+    deleteObject(desertRef).then(() => {
+      console.log("delete successfully")
+    }).catch((error) => {
+      console.log(error);
+    });
+    setFile("");
+    setFileUrl("");
+    setPercent(0);
+    // setIsDelete(false);
+  }
   const handleUpload = () => {
     console.log("hello")
     console.log(file)
@@ -111,13 +135,8 @@ const Assignment = () => {
             (snapshot.bytesTransferred / snapshot.totalBytes) * 100
           );
           // update progress
-          if (percent != 100) {
-            setPercent(percent);
-          }
-          else {
-            setPercent(0);
-            setFile("");
-          }
+          setPercent(percent);
+
         },
         (err) => console.log(err),
         () => {
@@ -183,7 +202,8 @@ const Assignment = () => {
                     </div>
                   </div>
                   <div className="flex justify-center p-2">
-                    {file != "" && <button onClick={handleUpload} className="w-full px-4 py-2 text-white bg-blue-500 rounded shadow-xl">Upload</button>}
+                    {percent == 0 && <button onClick={handleUpload} className="w-full px-4 py-2 text-white bg-blue-500 rounded shadow-xl">Upload</button>}
+                    {(file != "" && percent == 100) && <button onClick={deleteFile} className="w-full px-4 py-2 text-white bg-blue-500 rounded shadow-xl">Delete</button>}
                   </div>
                 </div>
                 <div></div>
@@ -252,20 +272,36 @@ const Assignment = () => {
                     />
                   </div>
                 </div>
-                <div className="w-full mb-4 md:mr-2 md:mb-0">
-                  <label className="block mb-2 text-sm font-bold text-gray-700" htmlFor="deadline">
-                    Deadline
-                  </label>
-                  <input
-                    name="gender"
-                    onChange={handleInput}
-                    value={deadline}
-                    className="w-full px-3 py-2 text-sm leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline"
-                    id="deadline"
-                    type="text"
-                    placeholder="Deadline"
-                    required
-                  />
+                <div className="mb-4 md:flex md:justify-between">
+                  <div className="mb-4 md:mr-2 md:mb-0">
+                    <label className="block mb-2 text-sm font-bold text-gray-700" htmlFor="subject">
+                      Subject
+                    </label>
+                    <input
+                      name="subject"
+                      onChange={handleInput}
+                      value={subject}
+                      className="w-full px-3 py-2 text-sm leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline"
+                      id="subject"
+                      type="text"
+                      placeholder="Subject"
+                    />
+                  </div>
+                  <div className="md:ml-2">
+                    <label className="block mb-2 text-sm font-bold text-gray-700" htmlFor="deadline">
+                      Deadline
+                    </label>
+                    <input
+                      name="deadline"
+                      onChange={handleInput}
+                      value={deadline}
+                      className="w-full px-3 py-2 text-sm leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline"
+                      id="deadline"
+                      type="text"
+                      placeholder="Deadline"
+                      required
+                    />
+                  </div>
                 </div>
                 <div className="w-full mt-4 mb-4 md:mr-2 md:mb-0">
                   <div style={{ width: "100%" }} className="mb-3 xl:w-96">
@@ -275,6 +311,7 @@ const Assignment = () => {
                     <textarea
                       className="form-control block w-full px-3 py-1.5 text-base font-normal  text-gray-700  bg-white bg-clip-padding  border border-solid border-gray-300 rounded transition  ease-in-out  m-  focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-non "
                       id="desc"
+                      name="desc"
                       value={desc}
                       onChange={handleInput}
                       rows="3"

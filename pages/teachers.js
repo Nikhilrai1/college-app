@@ -35,10 +35,10 @@ const Teachers = ({ teachers }) => {
             <section className="text-gray-600 body-font">
                 <div className="container px-5 py-24 mx-auto">
                     <div className="text-center mb-20">
-                        <h1 className="sm:text-3xl text-2xl font-medium title-font text-gray-900 mb-4">Our Students</h1>
+                        <h1 className="sm:text-3xl text-2xl font-medium title-font text-gray-900 mb-4">Our Teachers</h1>
                         <p className="text-base leading-relaxed xl:w-2/4 lg:w-3/4 mx-auto text-gray-500s">Herald Internal College</p>
                         <div className='mx-auto max-w-fit'>
-                            <span className='text-black mx-1'>Filter Students :</span>
+                            <span className='text-black mx-1'>Filter Teachers :</span>
                             <select name="sort" id="name" value={sortBy} onChange={(e) => setSortBy(e.target.value)} className='border border-black mx-1'>
                                 <option value="all">All</option>
                                 <option value="name">Name</option>
