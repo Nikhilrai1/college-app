@@ -10,18 +10,45 @@ const Navbar = () => {
     const router = useRouter();
     const [signOut,setSignOut] = useState(false);
     const [token, setToken] = useState(null)
+    const [auth, setAuth] = useState("")
+
+    // useEffect for getting token
     useEffect(() => {
         if (typeof window !== 'undefined') {
             setToken(JSON.parse(localStorage.getItem('token')));
         }
+        getProfile();
         setSignOut(false);
     }, [signOut,router.asPath])
+
     const signout = () => {
         localStorage.removeItem("token");
         setSignOut(true)
         router.push("/");
     }
-    console.log(token,"navbar")
+
+    // useEffect for profile
+    // useEffect(() => {
+    // },[token,asPath]);
+
+    const getProfile = async () => {
+        try {
+            console.log(token)
+            let res = await fetch(`${process.env.NEXT_PUBLIC_HOST}/api/tokendecrypt`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    "Authorization": `Bearer ${token}`
+                }
+            })
+            let data = await res.json();
+            console.log(data)
+            setAuth(data);
+        }
+        catch (err) {
+            console.log(err);
+        }
+    }
     return (
         <nav
             style={{
@@ -57,7 +84,7 @@ const Navbar = () => {
                             <Link href={"/notice"}><a href="#" className={`block ${asPath == "/notice" ? "text-blue-500" : "text-gray-700"} py-2 pr-4 pl-3 border-b border-gray-100 hover:bg-gray-50 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-gray-400 md:dark:hover:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700`} >Notice</a></Link>
                         </li>
                         <li>
-                            <Link href={"/assignment"}><a href="#" className={`block ${asPath == "/assignment" ? "text-blue-500" : "text-gray-700"} py-2 pr-4 pl-3 border-b border-gray-100 hover:bg-gray-50 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-gray-400 md:dark:hover:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700`}>Assignment</a></Link>
+                            {token && <Link href={auth.isTeacher || auth.isAdmin ? "/postassignment" : "/studentassignment"}><a href="#" className={`block ${asPath == "/assignment" ? "text-blue-500" : "text-gray-700"} py-2 pr-4 pl-3 border-b border-gray-100 hover:bg-gray-50 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-gray-400 md:dark:hover:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700`}>Assignment</a></Link>}
                         </li>
                         <li>
                             <Link href={"/gallary"}><a href="#" className={`block ${asPath == "/gallary" ? "text-blue-500" : "text-gray-700"} py-2 pr-4 pl-3 border-b border-gray-100 hover:bg-gray-50 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-gray-400 md:dark:hover:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700`} >Gallary</a></Link>
@@ -77,7 +104,6 @@ const Navbar = () => {
                                 <div className="py-1" role="none">
                                     <Link href={"/login"}><a href="#" className="hover:text-blue-500 text-gray-700 block px-4 py-2 text-sm" role="menuitem" tabIndex="-1" id="menu-item-0">Student Login</a></Link>
                                     <Link href={"/teacherlogin"}><a href="#" className="hover:text-blue-500 text-gray-700 block px-4 py-2 text-sm" role="menuitem" tabIndex="-1" id="menu-item-0">Teacher Login</a></Link>
-                                    <a className="hover:text-blue-500 text-gray-700 block px-4 py-2 text-sm" role="menuitem" tabIndex="-1" id="menu-item-2">Sign out</a>
                                 </div>
                             </div>
                         </li>}

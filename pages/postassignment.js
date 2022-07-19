@@ -5,7 +5,7 @@ import { storage } from '../firebase';
 import { ref, uploadBytesResumable, getDownloadURL, deleteObject, getStorage } from "firebase/storage";
 
 
-const Assignment = () => {
+const PostAssignment = () => {
   // state varriable of input field
   const [title, setTitle] = useState("");
   const [grade, setGrade] = useState("");
@@ -334,4 +334,4 @@ const Assignment = () => {
     </>
   )
 }
-export default Assignment
+export default PostAssignment;
