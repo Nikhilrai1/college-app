@@ -10,8 +10,15 @@ const handler = async (req, res) => {
     console.log(user);
     try {
         if (req.method == "GET") {
-            const assignments = await Assignment.find({ grade: user.grade });
-            res.status(200).json({ success: true, info: assignments });
+            if (user.isTeacher || user.isAdmin) {
+                const assignments = await Assignment.find({ creatorEmail: user.email });
+                console.log(assignments)
+                res.status(200).json({ success: true, info: assignments });
+            }
+            else {
+                const assignments = await Assignment.find({ grade: user.grade });
+                res.status(200).json({ success: true, info: assignments });
+            }
         }
         else {
             res.status(403).json({ success: false, error: "This method is not allowed" });

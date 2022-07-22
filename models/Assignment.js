@@ -11,6 +11,7 @@ const AssignmentSchema = new mongoose.Schema({
     file: { type: String, default: ""},
     creatorName: { type: String, required: true},
     creatorProfile: { type: String, default: ""},
+    creatorEmail: { type: String, required: true},
 }, { timestamps: true });
 
 export default mongoose.models.Assignment || mongoose.model('Assignment', AssignmentSchema);

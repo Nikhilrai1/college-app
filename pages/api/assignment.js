@@ -14,9 +14,10 @@ const handler = async (req, res) => {
             if (req.method == "POST") {
                 const { title, subject, grade, stream, desc, fileUrl, group, deadline } = req.body;
                 console.log(myToken)
+                console.log(user.email)
                 let assignment = new Assignment({
                     title, subject, grade, stream, desc, file: fileUrl, 
-                    group, deadline, creatorProfile:user.profile, creatorName: user.name
+                    group, deadline, creatorProfile:user.profile, creatorName: user.name, creatorEmail: user.email
                 });
                 let saveAssignment = await assignment.save();
                 console.log(assignment);
