@@ -9,7 +9,8 @@ const AssignmentSchema = new mongoose.Schema({
     group: { type: String, required: true },
     deadline: { type: String, required: true },
     file: { type: String, default: ""},
-    
+    creatorName: { type: String, required: true},
+    creatorProfile: { type: String, default: ""},
 }, { timestamps: true });
 
 export default mongoose.models.Assignment || mongoose.model('Assignment', AssignmentSchema);

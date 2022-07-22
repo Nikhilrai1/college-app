@@ -6,7 +6,6 @@ const handler = async (req, res) => {
 
     try {
         const authHeader = req.headers.authorization;
-        console.log(authHeader)
         if (authHeader) {
             if (req.method == "GET") {
                 const Token = authHeader.split(' ')[1];

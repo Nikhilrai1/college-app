@@ -12,6 +12,7 @@ const Login = ({createToken}) => {
     // handle submit on clicking register button
     const handleSubmit = async (e) => {
         e.preventDefault();
+        
         try {
             let res = await fetch(`${process.env.NEXT_PUBLIC_HOST}/api/login`, {
                 method: 'POST',
